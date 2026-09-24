@@ -1,0 +1,41 @@
+name: Build VNTextPatch with GBK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        repository: Tabing010102/VNTranslationTools
+        ref: cs2_gbk
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Remove C++ projects from solution
+      run: |
+        dotnet new sln -n VNTextPatch_GBK
+        dotnet sln VNTextPatch_GBK.sln add VNTextPatch.Shared/VNTextPatch.Shared.csproj
+        dotnet sln VNTextPatch_GBK.sln add VNTextPatch/VNTextPatch.csproj
+        
+    - name: Restore dependencies
+      run: dotnet restore VNTextPatch_GBK.sln
+      
+    - name: Build
+      run: dotnet build VNTextPatch_GBK.sln -c Release --no-restore
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VNTextPatch_GBK
+        path: |
+          VNTextPatch/bin/Release/net6.0/VNTextPatch.dll
+          VNTextPatch/bin/Release/net6.0/VNTextPatch.exe
+          VNTextPatch/bin/Release/net6.0/*.dll
