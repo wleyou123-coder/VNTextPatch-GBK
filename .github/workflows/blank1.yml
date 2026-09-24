@@ -1,0 +1,32 @@
+name: Build VNTextPatch with GBK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest  # Windows для .NET Framework
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        repository: Tabing010102/VNTranslationTools
+        ref: cs2_gbk
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Build only VNTextPatch
+      run: |
+        cd VNTextPatch
+        dotnet restore
+        dotnet build -c Release
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VNTextPatch_GBK
+        path: VNTextPatch/bin/Release/net6.0/
